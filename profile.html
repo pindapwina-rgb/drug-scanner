@@ -24,6 +24,22 @@
             gap: 15px;
         }
 
+        /* --- User Header Info --- */
+        .user-header-card {
+            background: linear-gradient(135deg, #00695c 0%, #004d40 100%);
+            border-radius: 20px; padding: 20px; color: white;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 5px 15px rgba(0,77,64,0.3);
+            margin-bottom: 5px;
+        }
+        .user-info h2 { font-size: 20px; margin-bottom: 5px; }
+        .user-info p { font-size: 14px; opacity: 0.8; }
+        .logout-btn { 
+            background: rgba(255,255,255,0.2); padding: 8px 15px; 
+            border-radius: 20px; font-size: 12px; cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
         /* --- สไตล์ปุ่มเมนู (Card Style) --- */
         .menu-card {
             display: flex;
@@ -47,6 +63,14 @@
             color: #004d40;
         }
 
+        /* ปุ่ม Admin */
+        .card-admin {
+            background-color: #fff3e0;
+            border: 1px solid #ffe0b2;
+            color: #e65100;
+        }
+        .card-admin .icon-box { background-color: #ffb74d; color: white; }
+
         /* ไอคอนในปุ่ม */
         .icon-box {
             width: 50px;
@@ -67,19 +91,8 @@
 
         .arrow-icon { opacity: 0.7; }
 
-        /* --- Sub Page --- */
-        .sub-page {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f0f4f8; z-index: 50; padding: 20px;
-            transform: translateX(100%); transition: 0.3s;
-            display: flex; flex-direction: column;
-        }
-        .sub-page.active { transform: translateX(0); }
-        .sub-header { display: flex; align-items: center; margin-bottom: 20px; color: #004d40; }
-        .back-btn { font-size: 24px; margin-right: 15px; cursor: pointer; }
-
-        /* Saved Items List */
-        .saved-item { 
+        /* --- Saved Items List (Legacy) --- */
+         .saved-item { 
             background: white; padding: 15px; border-radius: 15px; 
             margin-bottom: 10px; border-left: 6px solid #26a69a; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
@@ -93,98 +106,126 @@
 
     <div class="mobile-screen">
         
-        <div class="page-title">ประวัติส่วนตัว</div>
+        <!-- Header with Auth -->
+        <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="font-size: 24px; font-weight: bold; color: #004d40;">Drug Scanner</h1>
+            
+            <!-- Login/Register (Visible if NOT logged in) -->
+            <div id="authButtons" class="header-auth">
+                <a href="login.html" class="btn-header-login"><i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ</a>
+            </div>
+
+             <!-- User Profile (Visible if logged in) -->
+             <div id="userProfileIcon" class="header-auth" style="display:none;" onclick="checkLoginAndRedirect('personal_info.html')">
+                 <div style="width:35px; height:35px; background:#00695c; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:bold;">
+                     <i class="fas fa-user"></i>
+                 </div>
+             </div>
+        </div>
 
         <div class="content">
             
-         <div class="menu-card card-light" onclick="window.location.href='Notifications.html'">
-             <div class="icon-box"><i class="fas fa-bell"></i></div>
-             <div class="menu-text">การแจ้งเตือน</div>
-             <i class="fas fa-chevron-right arrow-icon"></i>
-        </div>
-
-            <div class="menu-card card-light" onclick="openPage('savedPage'); loadSavedDrugs();">
-                <div class="icon-box"><i class="fas fa-heartbeat"></i></div>
-                <div class="menu-text">ประวัติสุขภาพ</div> <i class="fas fa-chevron-right arrow-icon"></i>
+            <!-- Welcome Banner -->
+            <div id="welcomeCard" class="user-header-card" style="display:none; margin-bottom: 20px;">
+                <div class="user-info">
+                    <h2 id="userNameDisplay">สวัสดี!</h2>
+                    <p>วันนี้คุณดูแลสุขภาพหรือยัง?</p>
+                </div>
             </div>
 
-            <div class="menu-card card-light" onclick="window.location.href='center.html'">
+            <!-- Menu Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <a href="Notifications.html" class="menu-card card-light" style="flex-direction: column; height: 120px; justify-content: center; align-items: flex-start; padding: 20px; text-decoration: none;">
+                    <div class="icon-box" style="margin-bottom: 10px;"><i class="fas fa-bell"></i></div>
+                    <div class="menu-text" style="font-size: 16px;">แจ้งเตือน</div>
+                </a>
+
+                <a href="saved_drugs.html" class="menu-card card-light" style="flex-direction: column; height: 120px; justify-content: center; align-items: flex-start; padding: 20px; text-decoration: none;">
+                    <div class="icon-box" style="margin-bottom: 10px;"><i class="fas fa-heartbeat"></i></div>
+                    <div class="menu-text" style="font-size: 16px;">ประวัติยา</div>
+                </a>
+            </div>
+
+            <div class="menu-card card-light" onclick="window.location.href='center.html'" style="margin-top: 15px;">
                 <div class="icon-box"><i class="fas fa-question-circle"></i></div>
                 <div class="menu-text">ศูนย์ช่วยเหลือ</div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </div>
-
+            
+             <!-- Admin Board -->
+             <div id="adminBoard" class="menu-card card-admin" onclick="window.location.href='admin_dashboard.html'" style="display:none; margin-top: 15px;">
+                <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                <div class="menu-text">Admin Panel</div> <i class="fas fa-chevron-right arrow-icon"></i>
             </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item" onclick="window.location.href='home.html'">
-                <i class="fas fa-home"></i>
-                <span>หน้าหลัก</span>
-            </div>
-            <div class="nav-item active">
-                <i class="fas fa-user"></i>
-                <span>ฉัน</span>
+        </div>
+
+        <!-- Floating Action Button (Camera) -->
+        <div class="fab-container">
+            <div class="fab-btn" onclick="window.location.href='home.html'">
+                <i class="fas fa-camera"></i>
             </div>
         </div>
 
-        <div id="savedPage" class="sub-page">
-            <div class="sub-header">
-                <i class="fas fa-arrow-left back-btn" onclick="closePage('savedPage')"></i>
-                <h2>ประวัติสุขภาพ (ยาที่บันทึก)</h2>
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
             </div>
-            <div id="savedListContainer" style="overflow-y: auto; flex: 1;">
-                </div>
+            <div class="nav-item" style="pointer-events: none;"></div> <!-- Spacer for FAB -->
+            <div class="nav-item" onclick="checkLoginAndRedirect('personal_info.html')">
+                <i class="fas fa-user-circle"></i>
+                <span>ข้อมูลส่วนตัว</span>
+            </div>
         </div>
 
     </div>
 
-    <script>
-        // ฟังก์ชันเปิด/ปิดหน้าซ้อน
-        function openPage(id) { document.getElementById(id).classList.add('active'); }
-        function closePage(id) { document.getElementById(id).classList.remove('active'); }
+    <script type="module">
+        import { checkAuthState, logoutUser } from './js/auth.js';
+        import './js/pwa.js';
 
-        // ฟังก์ชันโหลดข้อมูลยาจาก LocalStorage
-        function loadSavedDrugs() {
-            const container = document.getElementById('savedListContainer');
-            const savedDrugs = JSON.parse(localStorage.getItem('mySavedDrugs')) || [];
+        const authButtons = document.getElementById('authButtons');
+        const userProfileIcon = document.getElementById('userProfileIcon');
+        const welcomeCard = document.getElementById('welcomeCard');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const adminBoard = document.getElementById('adminBoard');
 
-            container.innerHTML = ""; 
-
-            if (savedDrugs.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center; color:#888; margin-top:50px;">
-                        <i class="fas fa-file-medical" style="font-size:50px; margin-bottom:15px; color:#b2dfdb;"></i><br>
-                        ยังไม่มีประวัติสุขภาพ<br>ลองสแกนและบันทึกยาดูนะครับ
-                    </div>`;
-                return;
+        // Check Auth Status on Load
+        checkAuthState((user, userData) => {
+            if (user) {
+                // Logged In
+                authButtons.style.display = 'none';
+                userProfileIcon.style.display = 'flex';
+                welcomeCard.style.display = 'flex';
+                
+                if (userData) {
+                    userNameDisplay.innerText = `สวัสดี, ${userData.firstName}`;
+                    if(userData.role === 'admin') {
+                        adminBoard.style.display = 'flex';
+                    }
+                }
+            } else {
+                // Not Logged In
+                authButtons.style.display = 'flex';
+                userProfileIcon.style.display = 'none';
+                welcomeCard.style.display = 'none';
+                adminBoard.style.display = 'none';
             }
+        });
 
-            savedDrugs.reverse().forEach((drug, index) => {
-                const item = document.createElement('div');
-                item.className = 'saved-item';
-                item.innerHTML = `
-                    <div class="saved-name">${drug.name}</div>
-                    <div style="font-size:14px; color:#555;">${drug.desc}</div>
-                    <div style="font-size:12px; color:#888; margin-top:5px;">
-                        <i class="far fa-clock"></i> ${drug.date || '-'}
-                    </div>
-                    <i class="fas fa-trash delete-btn" onclick="deleteItem(${index})"></i>
-                `;
-                container.appendChild(item);
-            });
-        }
+        // document.getElementById('logoutBtn').addEventListener('click', logoutUser); // Moved to personal_info or specific setting page if needed
 
-        // ฟังก์ชันลบรายการ
-        function deleteItem(index) {
-            if(confirm('ต้องการลบประวัตินี้?')) {
-                let savedDrugs = JSON.parse(localStorage.getItem('mySavedDrugs')) || [];
-                let realIndex = savedDrugs.length - 1 - index;
-                savedDrugs.splice(realIndex, 1);
-                localStorage.setItem('mySavedDrugs', JSON.stringify(savedDrugs));
-                loadSavedDrugs(); 
-            }
-        }
+
+        window.checkLoginAndRedirect = function(url) {
+             checkAuthState((user) => {
+                 if(user) window.location.href = url;
+                 else {
+                     alert("กรุณาเข้าสู่ระบบก่อนใช้งานเมนูนี้");
+                     window.location.href = 'login.html';
+                 }
+             });
+        };
     </script>
-    <script src="js/pwa.js"></script>
 </body>
 </html>

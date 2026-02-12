@@ -8,89 +8,44 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-
     <style>
-        /* Specific Styles for Center */
-        body { background-color: #f0f8ff; }
-
-        .mobile-screen {
-            background: linear-gradient(180deg, #e3f2fd 0%, #ffffff 100%);
-            justify-content: center;
+        body { background-color: #e0f2f1; }
+        
+        .header-bar {
+            padding: 20px; text-align: center; position: relative;
+            background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
         }
+        .header-title { font-size: 22px; font-weight: bold; color: #00695c; }
+        .back-btn { position: absolute; left: 20px; top: 20px; font-size: 24px; color: #004d40; cursor: pointer; }
 
-        /* --- การ์ดสีฟ้า --- */
-        .help-card {
-            background-color: #42a5f5; /* สีฟ้าสดใส */
-            color: white;
-            border-radius: 20px;
-            padding: 30px 20px;
-            box-shadow: 0 10px 20px rgba(66, 165, 245, 0.3);
+        .content-card {
+            background: white; border-radius: 20px; padding: 25px;
+            margin: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             text-align: center;
-            position: relative;
         }
 
-        .help-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .help-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 25px;
-            font-weight: 400;
-        }
-
-        /* --- แถวข้อมูลติดต่อ --- */
-        .contact-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            text-align: left;
-            font-size: 16px;
+        .help-icon-main {
+            font-size: 60px; color: #26a69a; margin-bottom: 20px;
         }
         
-        .contact-row i {
-            font-size: 20px;
-            width: 25px;
-            text-align: center;
+        .contact-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px dashed #eee;
+            text-align: left; color: #333;
         }
-
-        /* เส้นขีดคั่น (Underlines) */
-        .divider-group {
-            margin: 15px 0 20px 0;
-            opacity: 0.6;
+        .contact-item:last-child { border-bottom: none; }
+        
+        .contact-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #e0f2f1; color: #00796b;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
         }
-        .divider {
-            height: 1px;
-            background-color: white;
-            margin-bottom: 4px;
-            width: 100%;
-        }
-
-        /* ปุ่มย้อนกลับ */
-        .back-btn-container {
-            position: absolute;
-            bottom: 40px;
-            left: 0; 
-            width: 100%;
-            display: flex; justify-content: center;
-        }
-        .btn-back {
-            background-color: #eceff1; 
-            color: #546e7a;
-            padding: 10px 30px; 
-            border-radius: 30px; 
-            border: none;
-            font-size: 16px; font-weight: bold; 
-            cursor: pointer;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            transition: 0.2s;
-        }
-        .btn-back:active { transform: scale(0.95); }
+        
+        .contact-text { font-size: 16px; font-weight: 500; flex: 1; }
+        .contact-sub { font-size: 12px; color: #777; }
 
     </style>
 </head>
@@ -98,42 +53,82 @@
 
     <div class="mobile-screen">
         
-        <div class="help-card">
-            <div class="help-title">ศูนย์ช่วยเหลือ</div>
-            <div class="help-subtitle">หากพบปัญหาเกี่ยวกับแอปพลิเคชัน</div>
+        <div class="header-bar">
+            <i class="fas fa-arrow-left back-btn" onclick="window.location.href='profile.html'"></i>
+            <div class="header-title">ศูนย์ช่วยเหลือ</div>
+        </div>
 
-            <div class="contact-row">
-                <i class="fas fa-envelope"></i>
-                <span>Gmail : pindapwina@gmail.com</span>
-            </div>
+        <div class="content" style="padding-bottom: 100px;">
+            <div class="content-card">
+                <div class="help-icon-main"><i class="fas fa-headset"></i></div>
+                <h2 style="color: #004d40; font-size: 20px; margin-bottom: 5px;">ต้องการความช่วยเหลือ?</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 25px;">หากพบปัญหา หรือต้องการคำปรึกษาเพิ่มเติม</p>
 
-            <div class="divider-group">
-                <div class="divider"></div>
-                <div class="divider"></div>
-            </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="contact-text">
+                        <div>Email Support</div>
+                        <div class="contact-sub">pindapwina@gmail.com</div>
+                    </div>
+                </div>
 
-            <div class="contact-row">
-                <i class="fas fa-phone-alt"></i>
-                <span>ปรึกษาเภสัชกรใกล้บ้าน 02-5919992</span>
-            </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div class="contact-text">
+                        <div>ปรึกษาเภสัชกรใกล้บ้าน</div>
+                        <div class="contact-sub">02-5919992</div>
+                    </div>
+                </div>
 
-            <div class="contact-row">
-                <i class="fas fa-hospital"></i> <span>สภางานเภสัชกรรม 027135592</span>
-            </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-hospital"></i></div>
+                    <div class="contact-text">
+                        <div>สภางานเภสัชกรรม</div>
+                        <div class="contact-sub">027135592</div>
+                    </div>
+                </div>
 
-            <div class="contact-row">
-                <i class="fas fa-ambulance"></i> <span>โทรแจ้ง 1669</span>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-ambulance"></i></div>
+                    <div class="contact-text">
+                        <div>แจ้งเหตุฉุกเฉิน</div>
+                        <div class="contact-sub" style="color: #d32f2f; font-weight: bold;">โทร 1669</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="back-btn-container">
-            <button class="btn-back" onclick="window.location.href='profile.html'">
-                <i class="fas fa-arrow-left"></i> ย้อนกลับ
-            </button>
+        <!-- Floating Action Button (Camera) -->
+        <div class="fab-container">
+            <div class="fab-btn" onclick="window.location.href='home.html'">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </div>
+            <div class="nav-item" style="pointer-events: none;"></div> <!-- Spacer for FAB -->
+            <div class="nav-item" onclick="checkLoginAndRedirect('personal_info.html')">
+                <i class="fas fa-user-circle"></i>
+                <span>ข้อมูลส่วนตัว</span>
+            </div>
         </div>
 
     </div>
+    
+    <script type="module">
+        import { checkAuthState } from './js/auth.js';
+        import './js/pwa.js';
 
-    <script src="js/pwa.js"></script>
+        window.checkLoginAndRedirect = function(url) {
+             checkAuthState((user) => {
+                 if(user) window.location.href = url;
+                 else window.location.href = 'login.html';
+             });
+        };
+    </script>
 </body>
 </html>

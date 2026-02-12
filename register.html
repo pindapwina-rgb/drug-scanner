@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>สมัครสมาชิก - Drug Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        body { background-color: #e0f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .mobile-screen { justify-content: center; height: auto; min-height: 100vh; }
+        
+        .auth-card {
+            background: white; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center;
+        }
+        .auth-title { font-size: 24px; font-weight: bold; color: #00695c; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 14px; margin-bottom: 5px; color: #555; }
+        .input-group input { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #26a69a; box-shadow: 0 0 5px rgba(38, 166, 154, 0.3); }
+        
+        .btn-auth {
+            width: 100%; padding: 12px; background: #26a69a; color: white; border: none; border-radius: 50px;
+            font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(38, 166, 154, 0.3);
+        }
+        .link-text { margin-top: 15px; font-size: 14px; color: #666; }
+        .link-text a { color: #00695c; font-weight: bold; text-decoration: none; }
+        .row-2 { display: flex; gap: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        <div class="auth-card">
+            <div class="auth-title">สมัครสมาชิก</div>
+            
+            <form id="registerForm">
+                <div class="row-2">
+                    <div class="input-group">
+                        <label>ชื่อ</label>
+                        <input type="text" id="firstName" required placeholder="สมชาย">
+                    </div>
+                    <div class="input-group">
+                        <label>นามสกุล</label>
+                        <input type="text" id="lastName" required placeholder="ใจดี">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>อีเมล</label>
+                    <input type="email" id="email" required placeholder="example@mail.com">
+                </div>
+                <div class="input-group">
+                    <label>รหัสผ่าน</label>
+                    <input type="password" id="password" required placeholder="********">
+                </div>
+                <div class="input-group">
+                    <label>ยืนยันรหัสผ่าน</label>
+                    <input type="password" id="confirmPassword" required placeholder="********">
+                </div>
+                
+                <button type="submit" class="btn-auth">สมัครสมาชิก</button>
+            </form>
+
+            <div class="link-text">
+                มีบัญชีอยู่แล้ว? <a href="login.html">เข้าสู่ระบบ</a>
+            </div>
+             <div class="link-text" style="margin-top: 10px;">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> กลับหน้าหลัก</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { registerUser } from './js/auth.js';
+        import { showModal } from './js/modal.js';
+        import './js/pwa.js';
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if(password !== confirmPassword) {
+                await showModal("ข้อผิดพลาด", "รหัสผ่านไม่ตรงกัน", "error");
+                return;
+            }
+
+            registerUser(email, password, { firstName, lastName });
+        });
+    </script>
+</body>
+</html>

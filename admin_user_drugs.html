@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Drugs - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        body { background-color: #e0f2f1; }
+        .drug-card {
+            background: white; border-radius: 15px; padding: 15px;
+            margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid #26a69a;
+        }
+        .drug-name { font-weight: bold; color: #004d40; font-size: 18px; margin-bottom: 5px; }
+        .drug-details { font-size: 14px; color: #555; margin-bottom: 5px; }
+        .drug-time { font-size: 12px; color: #888; display: flex; gap: 5px; flex-wrap: wrap; }
+        .time-badge { background: #e0f2f1; padding: 2px 8px; border-radius: 10px; color: #00695c; }
+    </style>
+</head>
+<body>
+    <div class="mobile-screen">
+        <div class="header-bar">
+            <i class="fas fa-arrow-left back-btn" onclick="window.history.back()"></i>
+            <div class="header-title">ยาของสมาชิก</div>
+        </div>
+
+        <div class="content" style="padding: 20px; padding-bottom: 80px;">
+            <div id="userInfo" style="margin-bottom: 20px; text-align: center; color: #004d40; font-weight: bold;">
+                กำลังโหลด...
+            </div>
+            <div id="drugList">
+                <p style="text-align: center; color: #888;">กำลังโหลดรายการยา...</p>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+             <div class="nav-item" onclick="window.location.href='admin_users.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>ย้อนกลับ</span>
+            </div>
+             <div class="nav-item active">
+                <i class="fas fa-pills"></i>
+                <span>รายการยา</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        // Ensure Admin Logic (Simplified for View)
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { auth } from './js/firebase-config.js';
+        import { checkAdminRole } from './js/auth.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUid = urlParams.get('uid');
+
+        document.addEventListener('DOMContentLoaded', () => {
+             onAuthStateChanged(auth, async (user) => {
+                if (user && await checkAdminRole(user)) {
+                    if(targetUid) {
+                        loadTargetUser(targetUid);
+                        loadUserDrugs(targetUid);
+                    } else {
+                        alert("ไม่พบรหัสสมาชิก");
+                        window.location.href = 'admin_users.html';
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+
+        async function loadTargetUser(uid) {
+            try {
+                const docRef = doc(db, "users", uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('userInfo').innerText = `รายการยาของ: ${data.firstName || ""} ${data.lastName || ""} (${data.email})`;
+                }
+            } catch (e) {
+                console.error("Error loading user info:", e);
+            }
+        }
+
+        async function loadUserDrugs(uid) {
+            const list = document.getElementById('drugList');
+            try {
+                const querySnapshot = await getDocs(collection(db, "users", uid, "drugs"));
+                
+                if (querySnapshot.empty) {
+                    list.innerHTML = '<p style="text-align: center; color: #888;">ไม่พบรายการยา</p>';
+                    return;
+                }
+
+                let html = '';
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    html += `
+                        <div class="drug-card">
+                            <div class="drug-name">${data.name || 'ไม่ระบุชื่อ'}</div>
+                            <div class="drug-details">ทานครั้งละ: ${data.dose || '-'}</div>
+                            <div class="drug-time">
+                                ${data.meals ? `<span class="time-badge">${data.meals}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                list.innerHTML = html;
+            } catch (e) {
+                console.error("Error loading drugs:", e);
+                list.innerHTML = '<p style="text-align: center; color: red;">เกิดข้อผิดพลาด</p>';
+            }
+        }
+    </script>
+</body>
+</html>

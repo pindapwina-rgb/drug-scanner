@@ -43,6 +43,7 @@
         .start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
         .btn-permission { padding: 15px 40px; background: #209688; border: none; border-radius: 30px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(32, 150, 136, 0.4); transition: 0.2s; }
         .btn-permission:active { transform: scale(0.95); }
+        .tips-link { color: #aaa; text-decoration: underline; margin-top: 15px; cursor: pointer; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -62,6 +63,20 @@
         <h2 style="margin-bottom: 10px;">ขออนุญาตใช้กล้อง</h2>
         <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">โปรดอนุญาตให้แอพเข้าถึงกล้อง<br>เพื่อสแกนและอ่านฉลากยา</p>
         <button class="btn-permission" onclick="grantPermission()">อนุญาตและเริ่มสแกน</button>
+        <p class="tips-link" onclick="showTips()">แนะนำวิธีการสแกน</p>
+    </div>
+
+    <div id="tipsModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="color: #209688; text-align: center; margin-bottom: 15px;">💡 เคล็ดลับการสแกน</h3>
+            <ul style="color: #555; font-size: 14px; line-height: 1.6; padding-left: 20px;">
+                <li>วางฉลากยาให้<b>ตรงกับกรอบ</b>ที่กำหนด</li>
+                <li>ถ่ายในที่ที่มี<b>แสงสว่างเพียงพอ</b> ไม่มืดหรือจ้าเกินไป</li>
+                <li>ถือกล้องให้<b>นิ่ง</b> ภาพต้องไม่เบลอ</li>
+                <li>หากอ่านไม่ออก ให้ลองขยับกล้องเข้า/ออก เล็กน้อย</li>
+            </ul>
+            <button class="btn btn-save" onclick="closeTips()" style="margin-top: 20px;">เข้าใจแล้ว</button>
+        </div>
     </div>
 
     <div class="scan-overlay">
@@ -103,7 +118,7 @@
         </div>
     </div>
 
-<script src="js/scanner.js"></script>
+<script type="module" src="js/scanner.js"></script>
 <script src="js/pwa.js"></script>
 </body>
 </html>

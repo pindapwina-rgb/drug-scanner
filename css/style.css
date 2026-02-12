@@ -44,6 +44,15 @@ body {
   margin-top: 20px;
 }
 
+/* Standard Header Bar (White with Back Arrow) */
+.header-bar {
+    padding: 20px; text-align: center; position: relative;
+    background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+}
+.header-title { font-size: 22px; font-weight: bold; color: #00695c; }
+.back-btn { position: absolute; left: 20px; top: 20px; font-size: 24px; color: #004d40; cursor: pointer; }
+
 /* --- Buttons --- */
 .btn-circle {
   width: 40px;
@@ -68,20 +77,12 @@ body {
   margin-top: 10px;
   color: white;
 }
-.btn-save {
-  background: #209688;
-}
-.btn-close {
-  background: #ef5350;
-}
-.btn-speak {
-  background: #ffb74d;
-}
+.btn-save { background: #209688; }
+.btn-close { background: #ef5350; }
+.btn-speak { background: #ffb74d; }
 
 /* --- Forms --- */
-.form-group {
-  margin-bottom: 12px;
-}
+.form-group { margin-bottom: 12px; }
 .form-control {
   width: 100%;
   padding: 10px;
@@ -91,35 +92,130 @@ body {
   color: #333;
 }
 
-/* --- Bottom Nav --- */
-.bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: white;
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  z-index: 20;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+/* --- Bottom Nav (Fixed) --- */
+.bottom-nav { 
+    position: fixed; 
+    bottom: 0; left: 50%; /* Center relative to screen if wide, but here we are in mobile-screen context usually */
+    transform: translateX(-50%);
+    width: 100%; max-width: 420px;
+    background: white; border-top: 1px solid #eee; 
+    display: flex; justify-content: space-around; align-items: flex-end; 
+    padding: 10px 0; 
+    z-index: 1000; 
+    border-top-left-radius: 20px; border-top-right-radius: 20px;
+    height: 70px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
 }
-.nav-item {
-  text-align: center;
-  color: #aaa;
-  cursor: pointer;
-  width: 50%;
+
+/* Media query to ensure it sticks to the mobile-screen if inside a desktop view */
+@media (min-width: 421px) {
+    .bottom-nav {
+        left: auto; transform: none; /* Reset if structured differently, but relying on max-width 420px container context is usually safer if relative. However, for fixed pos, we need to be careful. */
+    }
 }
-.nav-item i {
-  font-size: 24px;
-  margin-bottom: 4px;
-  display: block;
+/* Actually, let's keep it simple. If valid mobile app mostly, fixed bottom is fine. */
+
+
+.nav-item { 
+    text-align: center; color: #aaa; cursor: pointer; flex: 1; 
+    padding-bottom: 5px;
 }
-.nav-item span {
-  font-size: 12px;
+.nav-item i { font-size: 24px; margin-bottom: 4px; display: block; }
+.nav-item span { font-size: 12px; }
+.nav-item.active { color: #26a69a; }
+
+/* --- Floating Action Button (Scanner - Fixed) --- */
+.fab-container {
+    position: fixed;
+    bottom: 30px; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    pointer-events: auto;
 }
-.nav-item.active {
-  color: #26a69a;
+
+.fab-btn {
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, #26a69a 0%, #004d40 100%);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    color: white; font-size: 30px;
+    box-shadow: 0 4px 15px rgba(0, 77, 64, 0.4);
+    border: 5px solid #f0f8ff; 
+    cursor: pointer;
+    transition: transform 0.2s;
 }
+
+.fab-btn:active { transform: scale(0.95); }
+
+/* --- Header Auth (Improved) --- */
+.header-auth {
+    position: absolute; top: 25px; right: 20px;
+    display: flex; gap: 10px; align-items: center; z-index: 10;
+}
+.btn-header-login {
+    background: white;
+    color: #00695c;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,105,92,0.1);
+    transition: 0.2s;
+    display: flex; align-items: center; gap: 5px;
+}
+
+/* --- Custom Modal --- */
+.custom-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000; /* Highest z-index */
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.custom-modal-overlay.active {
+    opacity: 1; visibility: visible;
+}
+
+.custom-modal-card {
+    background: white; width: 85%; max-width: 320px;
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    transform: scale(0.8); opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.custom-modal-card.active {
+    transform: scale(1); opacity: 1;
+}
+
+.modal-icon {
+    font-size: 50px; margin-bottom: 20px;
+}
+.modal-success { color: #209688; }
+.modal-error { color: #ef5350; }
+.modal-info { color: #29b6f6; }
+
+.modal-title {
+    font-size: 20px; font-weight: bold; color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-message {
+    font-size: 16px; color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal-btn {
+    width: 100%; padding: 12px;
+    font-size: 16px; border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+

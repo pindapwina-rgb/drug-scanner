@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ข้อมูลส่วนตัว - Drug Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #b2dfdb; } /* Green background */
+        
+        .header-bar {
+            padding: 20px; text-align: center; position: relative;
+            background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+        }
+        .header-title { font-size: 22px; font-weight: bold; color: #00695c; }
+        .back-btn { position: absolute; left: 20px; top: 20px; font-size: 24px; color: #004d40; cursor: pointer; }
+
+        /* --- Info Card --- */
+        .info-card {
+            background: white; border-radius: 20px; padding: 15px;
+            margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            color: #00796b; font-size: 16px; font-weight: bold; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .data-row { margin-bottom: 25px; }
+        .data-label { font-size: 14px; color: #666; margin-bottom: 5px; }
+        .data-value { font-size: 16px; font-weight: 500; color: #333; min-height: 24px; padding-bottom: 5px; border-bottom: 1px dashed #eee;}
+        
+        /* --- Edit Mode Inputs --- */
+        .edit-input {
+            width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 16px; outline: none; display: none; /* Hidden by default */
+        }
+        .edit-input:focus { border-color: #26a69a; }
+
+        .hidden { display: none !important; }
+        
+        /* Ensure initial state for buttons */
+        #btnSave, #btnCancel { display: none; }
+        #btnEdit { display: flex; }
+
+        /* --- Action Buttons --- */
+        .action-bar {
+            margin-top: 20px;
+            display: flex; justify-content: center; gap: 15px;
+        }
+        
+        .btn-action {
+            flex: 1; padding: 12px 20px; 
+            border-radius: 30px; border: none;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-action:active { transform: scale(0.98); }
+
+        .btn-save { background-color: #26a69a; color: white; display: none; }
+        .btn-edit { background-color: #00796b; color: white; width: 100%; box-shadow: 0 4px 10px rgba(0, 121, 107, 0.3); } /* Make Edit distinct and nice */
+        .btn-cancel { background-color: #cfd8dc; color: #455a64; display: none; }
+        
+        .btn-logout {
+            width: 100%; margin-top: 25px; padding: 14px;
+            border-radius: 30px; border: 1px solid #ef9a9a;
+            background-color: white; color: #d32f2f;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-logout:active { background-color: #ffebee; transform: scale(0.98); }
+        .btn-logout:active { background-color: #ffcdd2; transform: scale(0.98); }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 160px !important; /* Force space for bottom nav */
+        }
+        
+        /* Hide scrollbar for clean look */
+        .content::-webkit-scrollbar { display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        <div class="header-bar">
+            <i class="fas fa-arrow-left back-btn" onclick="window.location.href='profile.html'"></i>
+            <div class="header-title">ข้อมูลส่วนตัว</div>
+        </div>
+
+        <div class="content">
+            
+            <!-- Personal Info Section -->
+            <div class="info-card">
+                <div class="section-title"><i class="fas fa-user"></i> ชื่อและข้อมูลพื้นฐาน</div>
+                
+                <div class="data-row">
+                    <div class="data-label">ชื่อนามสกุล</div>
+                    <div class="data-value" id="viewName">-</div>
+                    <input type="text" id="editName" class="edit-input" placeholder="ชื่อ นามสกุล">
+                </div>
+
+                <div class="row-2">
+                    <div class="col">
+                        <div class="data-label">วันเดือนปีเกิด</div>
+                        <div class="data-value" id="viewDob">-</div>
+                        <input type="date" id="editDob" class="edit-input">
+                    </div>
+                    <div class="col">
+                         <div class="data-label">อายุ</div>
+                         <div class="data-value" id="viewAge">-</div>
+                    </div>
+                </div>
+
+                <div class="data-row" style="margin-top:10px;">
+                    <div class="data-label">เพศ</div>
+                    <div class="data-value" id="viewGender">-</div>
+                    <select id="editGender" class="edit-input">
+                        <option value="ชาย">ชาย</option>
+                        <option value="หญิง">หญิง</option>
+                        <option value="ไม่ระบุ">ไม่ระบุ</option>
+                    </select>
+                </div>
+
+                <div class="data-row">
+                    <div class="data-label">โรคประจำตัว</div>
+                    <div class="data-value" id="viewDisease">ไม่มี</div>
+                    <input type="text" id="editDisease" class="edit-input" placeholder="ระบุโรคประจำตัว (ถ้ามี)">
+                </div>
+            </div>
+
+            <!-- Contact Info Section -->
+            <div class="info-card">
+                <div class="section-title"><i class="fas fa-address-book"></i> ข้อมูลติดต่อ</div>
+                
+                <div class="row-2">
+                    <div class="col">
+                        <div class="data-label">เบอร์โทร</div>
+                        <div class="data-value" id="viewPhone">-</div>
+                        <input type="tel" id="editPhone" class="edit-input" placeholder="08x-xxx-xxxx">
+                    </div>
+                    <div class="col">
+                        <div class="data-label">อีเมล</div>
+                        <div class="data-value" id="viewEmail">-</div>
+                        <!-- Email usually read-only -->
+                    </div>
+                </div>
+
+                <div class="data-row" style="margin-top:10px;">
+                    <div class="data-label">ที่อยู่</div>
+                    <div class="data-value" id="viewAddress">-</div>
+                    <textarea id="editAddress" class="edit-input" rows="3" placeholder="ที่อยู่ปัจจุบัน"></textarea>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-action btn-edit" id="btnEdit" onclick="toggleEditMode(true)">
+                    <i class="fas fa-pen"></i> แก้ไข
+                </button>
+                <button class="btn-action btn-save" id="btnSave" onclick="saveData()">
+                    <i class="fas fa-save"></i> บันทึก
+                </button>
+                <button class="btn-action btn-cancel" id="btnCancel" onclick="toggleEditMode(false)">
+                     ยกเลิก
+                </button>
+            </div>
+
+            <button class="btn-logout" id="btnLogout">
+                <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+            </button>
+
+        </div>
+
+        <!-- Floating Action Button (Camera) -->
+        <div class="fab-container">
+            <div class="fab-btn" onclick="window.location.href='home.html'">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </div>
+            <div class="nav-item" style="pointer-events: none;"></div> <!-- Spacer for FAB -->
+            <div class="nav-item active" onclick="checkLoginAndRedirect('personal_info.html')">
+                <i class="fas fa-user-circle"></i>
+                <span>ข้อมูลส่วนตัว</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './js/firebase-config.js';
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { showModal } from './js/modal.js';
+        import { logoutUser } from './js/auth.js';
+        import './js/pwa.js';
+
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            // Confirm logout?
+            // For now direct logout
+            await logoutUser();
+        });
+
+        let currentUser = null;
+
+        // Load Data
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                // document.getElementById('viewEmail').innerText = user.email; // Already in loadUserData or not needed if strictly following previous logic, but let's keep it safe
+                if(document.getElementById('viewEmail')) document.getElementById('viewEmail').innerText = user.email;
+                await loadUserData(user.uid);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadUserData(uid) {
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                // Set View Values
+                const fullName = (data.firstName || "") + " " + (data.lastName || "");
+                document.getElementById('viewName').innerText = fullName.trim() || "-";
+                document.getElementById('viewDob').innerText = data.dob || "-";
+                document.getElementById('viewGender').innerText = data.gender || "-";
+                document.getElementById('viewDisease').innerText = data.disease || "ไม่มี";
+                document.getElementById('viewPhone').innerText = data.phone || "-";
+                document.getElementById('viewAddress').innerText = data.address || "-";
+                
+                // Calculate Age
+                if(data.dob) {
+                    const age = new Date().getFullYear() - new Date(data.dob).getFullYear();
+                    document.getElementById('viewAge').innerText = age;
+                }
+
+                // Set Edit Inputs
+                document.getElementById('editName').value = fullName.trim();
+                document.getElementById('editDob').value = data.dob || "";
+                document.getElementById('editGender').value = data.gender || "ชาย";
+                document.getElementById('editDisease').value = data.disease || "";
+                document.getElementById('editPhone').value = data.phone || "";
+                document.getElementById('editAddress').value = data.address || "";
+            }
+        }
+
+        // Save Data
+        window.saveData = async function() {
+            if (!currentUser) return;
+
+            const nameParts = document.getElementById('editName').value.trim().split(" ");
+            const firstName = nameParts[0] || "";
+            const lastName = nameParts.slice(1).join(" ") || "";
+
+            const updateData = {
+                firstName: firstName,
+                lastName: lastName,
+                dob: document.getElementById('editDob').value,
+                gender: document.getElementById('editGender').value,
+                disease: document.getElementById('editDisease').value,
+                phone: document.getElementById('editPhone').value,
+                address: document.getElementById('editAddress').value
+            };
+
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), updateData);
+                await showModal("สำเร็จ", "บันทึกข้อมูลเรียบร้อย!", "success");
+                toggleEditMode(false);
+                loadUserData(currentUser.uid); // Reload view
+            } catch (e) {
+                console.error("Save Error: ", e);
+                await showModal("ผิดพลาด", "เกิดข้อผิดพลาดในการบันทึก", "error");
+            }
+        }
+
+        // Toggle UI
+        window.toggleEditMode = function(isEdit) {
+            const viewEls = document.querySelectorAll('.data-value');
+            const editEls = document.querySelectorAll('.edit-input');
+            const btnEdit = document.getElementById('btnEdit');
+            const btnSave = document.getElementById('btnSave');
+            const btnCancel = document.getElementById('btnCancel');
+
+            if (isEdit) {
+                viewEls.forEach(el => el.style.display = 'none');
+                editEls.forEach(el => el.style.display = 'block');
+                
+                btnEdit.style.display = 'none';
+                btnSave.style.display = 'flex';
+                btnCancel.style.display = 'flex';
+            } else {
+                viewEls.forEach(el => el.style.display = 'block');
+                editEls.forEach(el => el.style.display = 'none');
+                
+                btnEdit.style.display = 'flex';
+                btnSave.style.display = 'none';
+                btnCancel.style.display = 'none';
+            }
+        }
+        
+        // Initialize State on Load
+        toggleEditMode(false);
+    </script>
+</body>
+</html>

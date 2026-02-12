@@ -1,4 +1,12 @@
 // js/scanner.js - Handles Camera, OCR, and TTS
+import { showModal } from "./modal.js";
+
+window.showTips = function() {
+    document.getElementById('tipsModal').classList.add('active');
+}
+window.closeTips = function() {
+    document.getElementById('tipsModal').classList.remove('active');
+}
 
 let video, canvas, synth;
 let stream = null;
@@ -31,7 +39,7 @@ function loadVoices() {
 }
 
 // --- 2. Permission Handling ---
-function grantPermission() {
+window.grantPermission = function() { // Expose to global scope for HTML button
     // Unlock Audio Context on first interaction
     synth.cancel();
     synth.speak(new SpeechSynthesisUtterance(""));
@@ -55,7 +63,7 @@ async function startCamera() {
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
             handleStream(stream);
         } catch (err2) { 
-            alert("ไม่สามารถเปิดกล้องได้: " + err2.message); 
+            await showModal("ผิดพลาด", "ไม่สามารถเปิดกล้องได้: " + err2.message, "error");
             document.getElementById('startScreen').style.display = 'flex';
         }
     }
@@ -70,7 +78,7 @@ function handleStream(streamData) {
 }
 
 // --- 4. Snapshot & OCR ---
-function takeSnapshot() {
+window.takeSnapshot = function() { // Expose to global
     if (!video.srcObject) return;
     
     // Unlock audio again just in case
@@ -91,12 +99,16 @@ function takeSnapshot() {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, startX, startY, rectWidth, rectHeight, 0, 0, rectWidth, rectHeight);
 
-    // Pre-process Image (Binarization)
+    // Pre-process Image (Grayscale & Contrast)
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
         const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        const color = avg > 100 ? 255 : 0; // Simple Threshold
+        // Increase contrast
+        const contrast = 1.2; // Factor
+        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+        const color = factor * (avg - 128) + 128;
+        
         data[i] = data[i + 1] = data[i + 2] = color;
     }
     ctx.putImageData(imageData, 0, 0);
@@ -105,13 +117,13 @@ function takeSnapshot() {
     canvas.toBlob((blob) => {
         Tesseract.recognize(blob, 'tha+eng', {
             tessedit_char_whitelist: '0123456789กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลวศษสหฬอฮฯะัาำิีึืฺุูเแโใไๅๆ็่้๊๋์abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,:/()%+- ',
-            tessedit_pageseg_mode: '6'
+            tessedit_pageseg_mode: '3' // 3 = Auto, 6 = Block
         }).then(({ data: { text } }) => {
             document.getElementById('loadingScreen').classList.remove('active');
             parseDrugText(text);
-        }).catch(err => {
+        }).catch(async err => {
             document.getElementById('loadingScreen').classList.remove('active');
-            alert("เกิดข้อผิดพลาดในการอ่าน: " + err);
+            await showModal("ผิดพลาด", "เกิดข้อผิดพลาดในการอ่าน: " + err, "error");
             video.play();
         });
     });
@@ -119,33 +131,46 @@ function takeSnapshot() {
 
 // --- 5. Data Parsing ---
 function cleanGibberish(text) {
-    const lines = text.split('\n').filter(line => {
-        const cleanLine = line.trim();
-        return cleanLine.length > 2;
-    });
-    return lines.join('\n').replace(/[^ก-๙a-zA-Z0-9\s\.\,\(\)\/\-\%]/g, ' ');
+    // Keep lines that look meaningful
+    return text.replace(/[^ก-๙a-zA-Z0-9\s\.\,\(\)\/\-\%]/g, ' ');
 }
 
-function parseDrugText(rawText) {
+window.parseDrugText = function(rawText) {
     const cleanedText = cleanGibberish(rawText);
-    document.getElementById('rawText').value = cleanedText;
+    document.getElementById('rawText').value = rawText + "\n\n--- Cleaned ---\n" + cleanedText;
 
     const fullText = cleanedText.replace(/\s+/g, ' '); 
+    const lowerText = fullText.toLowerCase();
     
     let name = "";
     let dose = "-"; 
     let meals = "";
 
     // 1. Name Strategy
-    if (!name) {
-        const lines = cleanedText.split('\n');
-        const potentialName = lines.find(l => l.length > 4 && !l.match(/^[0-9\s\.]+$/)); 
-        name = potentialName ? potentialName.trim() : "ไม่พบชื่อยา";
+    // Try to find common drug names first
+    if (lowerText.includes("paracetamol") || lowerText.includes("พาราเซตามอล")) name = "Paracetamol (พาราเซตามอล)";
+    else if (lowerText.includes("amoxy") || lowerText.includes("amoxicillin")) name = "Amoxicillin (ยาฆ่าเชื้อ)";
+    else if (lowerText.includes("loratadine")) name = "Loratadine (ยาแก้แพ้)";
+    else {
+        // Fallback: Longest English word or first Thai phrase
+        const lines = rawText.split('\n');
+        // Find line with most CAPS (often Drug Name)
+        const capLine = lines.find(l => /[A-Z]{4,}/.test(l));
+        if (capLine) name = capLine.trim();
+        else {
+             // Fallback to previous logic
+            const potentialName = lines.find(l => l.length > 5 && !l.match(/^[0-9\s\.\:]+$/)); 
+            name = potentialName ? potentialName.trim() : "";
+        }
     }
 
     // 2. Dose Strategy
-    const doseMatch = fullText.match(/(รับประทาน|กิน|ทาน|ครั้งละ)\s*(\d+)\s*(เม็ด|แคปซูล)/);
-    if (doseMatch) dose = doseMatch[2];
+    // Look for "1 เม็ด", "2 catpsules", etc.
+    const doseMatch = fullText.match(/(ทาน|กิน|รับประทาน|ครั้งละ)\s*(\d+|[๐-๙]+|[halfครึ่ง]+)\s*(เม็ด|แคปซูล|capsule|tablet)/i);
+    if (doseMatch) {
+         dose = doseMatch[2];
+         if(dose === 'half' || dose === 'ครึ่ง') dose = "0.5";
+    }
 
     // 3. Meals Strategy
     let mealParts = [];
@@ -169,18 +194,21 @@ function parseDrugText(rawText) {
     speakParsedResult();
 }
 
-function closeModal() {
+window.closeModal = function() {
     document.getElementById('resultModal').classList.remove('active');
     synth.cancel();
     video.play();
 }
 
-function saveData() {
+window.saveData = async function() {
     const drugName = document.getElementById('editDrugName').value;
     const dose = document.getElementById('editDose').value;
     const meals = document.getElementById('editMeals').value;
 
-    if (!drugName) { alert("กรุณาระบุชื่อยา"); return; }
+    if (!drugName) { 
+        await showModal("แจ้งเตือน", "กรุณาระบุชื่อยา", "info"); 
+        return; 
+    }
 
     let description = "";
     if (dose && dose !== "-") description += `ทานครั้งละ ${dose} เม็ด `;
@@ -196,12 +224,12 @@ function saveData() {
     existingData.push(medData);
     localStorage.setItem('mySavedDrugs', JSON.stringify(existingData));
 
-    alert("✅ บันทึกข้อมูลลงประวัติสุขภาพเรียบร้อย!");
+    await showModal("สำเร็จ", "บันทึกข้อมูลลงประวัติสุขภาพเรียบร้อย!", "success");
     window.location.href = "profile.html";
 }
 
 // --- 6. Smart TTS ---
-function speakParsedResult() {
+window.speakParsedResult = function() {
     synth.cancel();
     loadVoices();
 

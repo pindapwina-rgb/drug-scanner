@@ -1,5 +1,5 @@
 // sw.js - Service Worker for PWA (Offline & Cache)
-const CACHE_NAME = 'drug-scan-v1';
+const CACHE_NAME = 'drug-scan-v12'; // Updated to v12 for Admin Click Fix
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,9 +7,21 @@ const ASSETS_TO_CACHE = [
   './profile.html',
   './Notifications.html',
   './center.html',
+  './login.html',
+  './register.html',
+  './personal_info.html',
+  './saved_drugs.html',
+  './admin_dashboard.html',
+  './admin_users.html',
+  './admin_user_drugs.html',
   './css/style.css',
   './js/scanner.js',
   './js/notifications.js',
+  './js/auth.js',
+  './js/admin.js',
+  './js/firebase-config.js',
+  './js/pwa.js',
+  './js/modal.js',
   './manifest.json',
   'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',

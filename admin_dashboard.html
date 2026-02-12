@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Drug Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        body { background-color: #e0f2f1; }
+        .dashboard-card {
+            background: white; border-radius: 20px; padding: 20px;
+            margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .dashboard-card:active { transform: scale(0.98); }
+        .stat-icon { font-size: 40px; color: #26a69a; margin-bottom: 10px; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #004d40; }
+        .stat-label { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="mobile-screen">
+        <div class="header-bar">
+            <i class="fas fa-arrow-left back-btn" onclick="window.location.href='profile.html'"></i>
+            <div class="header-title">ผู้ดูแลระบบ</div>
+        </div>
+
+        <div class="content" style="padding: 20px;">
+            <div class="dashboard-card" onclick="window.location.href='admin_users.html'">
+                <i class="fas fa-users stat-icon"></i>
+                <div class="stat-value" id="totalUsers">-</div>
+                <div class="stat-label">สมาชิกทั้งหมด</div>
+            </div>
+            
+            <!-- Future Features -->
+            <div class="dashboard-card" style="opacity: 0.6; cursor: default;">
+                <i class="fas fa-chart-pie stat-icon" style="color: #ccc;"></i>
+                <div class="stat-value" style="color: #aaa;">Soon</div>
+                <div class="stat-label">สถิติการใช้งาน</div>
+            </div>
+        </div>
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="window.location.href='admin_dashboard.html'">
+                <i class="fas fa-home"></i>
+                <span>แดชบอร์ด</span>
+            </div>
+             <div class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user-circle"></i>
+                <span>กลับหน้าหลัก</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { collection, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import './js/auth.js'; // Ensure auth is checked
+
+        async function loadStats() {
+            try {
+                const coll = collection(db, "users");
+                const snapshot = await getCountFromServer(coll);
+                document.getElementById('totalUsers').innerText = snapshot.data().count;
+            } catch (e) {
+                console.error("Error loading stats:", e);
+                document.getElementById('totalUsers').innerText = "Error";
+            }
+        }
+        loadStats();
+    </script>
+</body>
+</html>

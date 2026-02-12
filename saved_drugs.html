@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติยาที่บันทึกไว้</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body { background-color: #e0f2f1; }
+        .mobile-screen { height: 100vh; display: flex; flex-direction: column; }
+        
+        .header-bar {
+            padding: 20px; text-align: center; position: relative;
+            background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 10px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+        }
+        .header-title { font-size: 20px; font-weight: bold; color: #00695c; }
+        .back-btn { position: absolute; left: 20px; top: 20px; font-size: 24px; color: #004d40; cursor: pointer; }
+
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+
+        .drug-card {
+            background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); position: relative;
+            border-left: 5px solid #26a69a;
+            transition: transform 0.2s;
+        }
+        .drug-card:active { transform: scale(0.98); }
+        
+        .drug-name { font-size: 18px; font-weight: bold; color: #004d40; margin-bottom: 5px; }
+        .drug-desc { font-size: 14px; color: #555; margin-bottom: 5px; }
+        .drug-date { font-size: 12px; color: #999; }
+        
+        .delete-btn {
+            position: absolute; top: 15px; right: 15px;
+            color: #ef5350; cursor: pointer; font-size: 18px;
+            padding: 5px;
+        }
+
+        .empty-state {
+            text-align: center; margin-top: 50px; color: #888;
+        }
+        .empty-icon { font-size: 60px; color: #ccc; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        <div class="header-bar">
+            <i class="fas fa-arrow-left back-btn" onclick="window.location.href='profile.html'"></i>
+            <div class="header-title">ประวัติยาของฉัน</div>
+        </div>
+
+        <div class="content" id="drugListContainer">
+            <!-- JS will populate list here -->
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-prescription-bottle-alt"></i></div>
+                <p>ยังไม่มีรายการยาที่บันทึกไว้</p>
+            </div>
+        </div>
+
+        <!-- Floating Action Button (Camera) -->
+        <div class="fab-container">
+            <div class="fab-btn" onclick="window.location.href='home.html'">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="window.location.href='profile.html'">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </div>
+            <div class="nav-item" style="pointer-events: none;"></div> <!-- Spacer -->
+            <div class="nav-item" onclick="checkLoginAndRedirect('personal_info.html')">
+                <i class="fas fa-user-circle"></i>
+                <span>ข้อมูลส่วนตัว</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { showModal } from './js/modal.js';
+        import { checkAuthState } from './js/auth.js';
+        import './js/pwa.js';
+
+        // Check Login (Optional for local storage but good practice)
+        checkAuthState((user) => {
+            if(!user) {
+                // If you want to force login:
+                // window.location.href = 'login.html';
+            }
+        });
+
+        window.checkLoginAndRedirect = function(url) {
+             checkAuthState((user) => {
+                 if(user) window.location.href = url;
+                 else {
+                     showModal("แจ้งเตือน", "กรุณาเข้าสู่ระบบก่อนใช้งาน", "info").then(() => {
+                        window.location.href = 'login.html';
+                     });
+                 }
+             });
+        };
+
+        function loadSavedDrugs() {
+            const container = document.getElementById('drugListContainer');
+            const savedDrugs = JSON.parse(localStorage.getItem('mySavedDrugs')) || [];
+
+            if (savedDrugs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-prescription-bottle-alt"></i></div>
+                        <p>ยังไม่มีรายการยาที่บันทึกไว้</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            savedDrugs.reverse().forEach((drug, index) => {
+                const card = document.createElement('div');
+                card.className = 'drug-card';
+                card.innerHTML = `
+                    <div class="delete-btn" onclick="deleteDrug(${savedDrugs.length - 1 - index})">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div class="drug-name">${drug.name}</div>
+                    <div class="drug-desc">${drug.desc || '-'}</div>
+                    <div class="drug-date"><i class="far fa-clock"></i> ${drug.date}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.deleteDrug = async function(originalIndex) {
+            // Confirm Dialog could be nice here
+            // But for now direct delete or use showModal if we add confirm logic later
+            // Since showModal currently only has "OK", we'll just delete for now.
+            
+            const savedDrugs = JSON.parse(localStorage.getItem('mySavedDrugs')) || [];
+            // We reversed the display, so we need to map the index back or just filter
+            // The argument 'originalIndex' passed above is actually the real index because of how I calculated it: (length - 1 - displayedIndex)
+            
+            savedDrugs.splice(originalIndex, 1);
+            localStorage.setItem('mySavedDrugs', JSON.stringify(savedDrugs));
+            
+            await showModal("สำเร็จ", "ลบรายการยาเรียบร้อยแล้ว", "success");
+            loadSavedDrugs();
+        }
+
+        // Initialize
+        loadSavedDrugs();
+
+    </script>
+</body>
+</html>
