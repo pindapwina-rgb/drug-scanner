@@ -1,5 +1,5 @@
 // sw.js - Service Worker for PWA (Offline & Cache)
-const CACHE_NAME = 'drug-scan-v14'; // Updated to v14 for New Logo
+const CACHE_NAME = 'drug-scan-v15'; // Updated to v15 for Icon Fix
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
