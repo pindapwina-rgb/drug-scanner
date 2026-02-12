@@ -1,0 +1,22 @@
+{
+  "name": "Live Scan AI Pro",
+  "short_name": "DrugScan",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#e0f2f1",
+  "theme_color": "#209688",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3076/3076136.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3076/3076136.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "permissions": ["camera", "microphone", "notifications"]
+}

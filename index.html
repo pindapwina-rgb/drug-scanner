@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ยินดีต้อนรับ - Drug Scanner</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+    <link rel="manifest" href="manifest.json" />
+
+    <style>
+      /* Specific Styles for Index Page */
+      body {
+        /* Override default body for Landing Page */
+        background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
+      }
+
+      .card-container {
+        background: white;
+        width: 100%;
+        max-width: 380px;
+        padding: 50px 30px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      .logo-icon {
+        font-size: 80px;
+        color: #1a9c8e;
+        margin-bottom: 20px;
+        transform: rotate(-15deg);
+        display: inline-block;
+      }
+
+      h2 {
+        color: #333;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      p.subtitle {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 40px;
+        line-height: 1.5;
+      }
+
+      /* --- ปุ่มกดปุ่มเดียว --- */
+      .btn-start {
+        width: 100%;
+        padding: 16px;
+        background-color: #1a9c8e;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(26, 156, 142, 0.4);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-start:hover {
+        background-color: #147d72;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(26, 156, 142, 0.5);
+      }
+
+      .btn-start i {
+        margin-left: 10px;
+      }
+      .footer-text {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card-container">
+      <i class="fas fa-pills logo-icon"></i>
+
+      <h2>Drug Scanner</h2>
+      <p class="subtitle">
+        ผู้ช่วยอัจฉริยะในการอ่านฉลากยา<br />
+        ใช้งานง่าย แม่นยำ รวดเร็ว
+      </p>
+
+      <a href="home.html" class="btn-start">
+        เริ่มต้นใช้งาน <i class="fas fa-arrow-right"></i>
+      </a>
+
+      <div class="footer-text">เวอร์ชั่น 1.0.0 beta</div>
+    </div>
+    <script src="js/pwa.js"></script>
+  </body>
+</html>

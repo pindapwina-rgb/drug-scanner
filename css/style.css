@@ -1,0 +1,125 @@
+/* --- Global Settings --- */
+@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Sarabun", sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* --- Mobile Screen Container --- */
+.mobile-screen {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, #e0f2f1 0%, #b2dfdb 100%);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- Common UI Components --- */
+.page-header {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: #00695c;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #004d40;
+  padding: 30px 25px 10px 25px;
+  margin-top: 20px;
+}
+
+/* --- Buttons --- */
+.btn-circle {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  color: white;
+}
+.btn-save {
+  background: #209688;
+}
+.btn-close {
+  background: #ef5350;
+}
+.btn-speak {
+  background: #ffb74d;
+}
+
+/* --- Forms --- */
+.form-group {
+  margin-bottom: 12px;
+}
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #e9ecef;
+  color: #333;
+}
+
+/* --- Bottom Nav --- */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 20;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+.nav-item {
+  text-align: center;
+  color: #aaa;
+  cursor: pointer;
+  width: 50%;
+}
+.nav-item i {
+  font-size: 24px;
+  margin-bottom: 4px;
+  display: block;
+}
+.nav-item span {
+  font-size: 12px;
+}
+.nav-item.active {
+  color: #26a69a;
+}

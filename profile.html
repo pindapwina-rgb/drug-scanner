@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติส่วนตัว</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        /* Specific Styles for Profile */
+        body { background-color: #e0f7fa; }
+
+        /* --- พื้นที่เนื้อหา --- */
+        .content {
+            flex: 1;
+            padding: 20px 25px;
+            overflow-y: auto;
+            padding-bottom: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- สไตล์ปุ่มเมนู (Card Style) --- */
+        .menu-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 80px;
+        }
+
+        .menu-card:active {
+            transform: scale(0.98);
+        }
+
+        /* ปุ่มสีอ่อน */
+        .card-light {
+            background-color: #e0f2f1;
+            border: 1px solid #b2dfdb;
+            color: #004d40;
+        }
+
+        /* ไอคอนในปุ่ม */
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px;
+            margin-right: 20px;
+        }
+
+        .card-light .icon-box { background-color: #80cbc4; color: white; }
+
+        .menu-text {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .arrow-icon { opacity: 0.7; }
+
+        /* --- Sub Page --- */
+        .sub-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f0f4f8; z-index: 50; padding: 20px;
+            transform: translateX(100%); transition: 0.3s;
+            display: flex; flex-direction: column;
+        }
+        .sub-page.active { transform: translateX(0); }
+        .sub-header { display: flex; align-items: center; margin-bottom: 20px; color: #004d40; }
+        .back-btn { font-size: 24px; margin-right: 15px; cursor: pointer; }
+
+        /* Saved Items List */
+        .saved-item { 
+            background: white; padding: 15px; border-radius: 15px; 
+            margin-bottom: 10px; border-left: 6px solid #26a69a; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
+        }
+        .saved-name { font-weight: bold; font-size: 18px; color: #004d40; }
+        .delete-btn { position: absolute; top: 15px; right: 15px; color: #ff5252; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        
+        <div class="page-title">ประวัติส่วนตัว</div>
+
+        <div class="content">
+            
+         <div class="menu-card card-light" onclick="window.location.href='Notifications.html'">
+             <div class="icon-box"><i class="fas fa-bell"></i></div>
+             <div class="menu-text">การแจ้งเตือน</div>
+             <i class="fas fa-chevron-right arrow-icon"></i>
+        </div>
+
+            <div class="menu-card card-light" onclick="openPage('savedPage'); loadSavedDrugs();">
+                <div class="icon-box"><i class="fas fa-heartbeat"></i></div>
+                <div class="menu-text">ประวัติสุขภาพ</div> <i class="fas fa-chevron-right arrow-icon"></i>
+            </div>
+
+            <div class="menu-card card-light" onclick="window.location.href='center.html'">
+                <div class="icon-box"><i class="fas fa-question-circle"></i></div>
+                <div class="menu-text">ศูนย์ช่วยเหลือ</div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </div>
+
+            </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="window.location.href='home.html'">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>ฉัน</span>
+            </div>
+        </div>
+
+        <div id="savedPage" class="sub-page">
+            <div class="sub-header">
+                <i class="fas fa-arrow-left back-btn" onclick="closePage('savedPage')"></i>
+                <h2>ประวัติสุขภาพ (ยาที่บันทึก)</h2>
+            </div>
+            <div id="savedListContainer" style="overflow-y: auto; flex: 1;">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ฟังก์ชันเปิด/ปิดหน้าซ้อน
+        function openPage(id) { document.getElementById(id).classList.add('active'); }
+        function closePage(id) { document.getElementById(id).classList.remove('active'); }
+
+        // ฟังก์ชันโหลดข้อมูลยาจาก LocalStorage
+        function loadSavedDrugs() {
+            const container = document.getElementById('savedListContainer');
+            const savedDrugs = JSON.parse(localStorage.getItem('mySavedDrugs')) || [];
+
+            container.innerHTML = ""; 
+
+            if (savedDrugs.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; color:#888; margin-top:50px;">
+                        <i class="fas fa-file-medical" style="font-size:50px; margin-bottom:15px; color:#b2dfdb;"></i><br>
+                        ยังไม่มีประวัติสุขภาพ<br>ลองสแกนและบันทึกยาดูนะครับ
+                    </div>`;
+                return;
+            }
+
+            savedDrugs.reverse().forEach((drug, index) => {
+                const item = document.createElement('div');
+                item.className = 'saved-item';
+                item.innerHTML = `
+                    <div class="saved-name">${drug.name}</div>
+                    <div style="font-size:14px; color:#555;">${drug.desc}</div>
+                    <div style="font-size:12px; color:#888; margin-top:5px;">
+                        <i class="far fa-clock"></i> ${drug.date || '-'}
+                    </div>
+                    <i class="fas fa-trash delete-btn" onclick="deleteItem(${index})"></i>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // ฟังก์ชันลบรายการ
+        function deleteItem(index) {
+            if(confirm('ต้องการลบประวัตินี้?')) {
+                let savedDrugs = JSON.parse(localStorage.getItem('mySavedDrugs')) || [];
+                let realIndex = savedDrugs.length - 1 - index;
+                savedDrugs.splice(realIndex, 1);
+                localStorage.setItem('mySavedDrugs', JSON.stringify(savedDrugs));
+                loadSavedDrugs(); 
+            }
+        }
+    </script>
+    <script src="js/pwa.js"></script>
+</body>
+</html>

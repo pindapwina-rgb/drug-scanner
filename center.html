@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศูนย์ช่วยเหลือ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        /* Specific Styles for Center */
+        body { background-color: #f0f8ff; }
+
+        .mobile-screen {
+            background: linear-gradient(180deg, #e3f2fd 0%, #ffffff 100%);
+            justify-content: center;
+        }
+
+        /* --- การ์ดสีฟ้า --- */
+        .help-card {
+            background-color: #42a5f5; /* สีฟ้าสดใส */
+            color: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 20px rgba(66, 165, 245, 0.3);
+            text-align: center;
+            position: relative;
+        }
+
+        .help-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .help-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+
+        /* --- แถวข้อมูลติดต่อ --- */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+            font-size: 16px;
+        }
+        
+        .contact-row i {
+            font-size: 20px;
+            width: 25px;
+            text-align: center;
+        }
+
+        /* เส้นขีดคั่น (Underlines) */
+        .divider-group {
+            margin: 15px 0 20px 0;
+            opacity: 0.6;
+        }
+        .divider {
+            height: 1px;
+            background-color: white;
+            margin-bottom: 4px;
+            width: 100%;
+        }
+
+        /* ปุ่มย้อนกลับ */
+        .back-btn-container {
+            position: absolute;
+            bottom: 40px;
+            left: 0; 
+            width: 100%;
+            display: flex; justify-content: center;
+        }
+        .btn-back {
+            background-color: #eceff1; 
+            color: #546e7a;
+            padding: 10px 30px; 
+            border-radius: 30px; 
+            border: none;
+            font-size: 16px; font-weight: bold; 
+            cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+        .btn-back:active { transform: scale(0.95); }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        
+        <div class="help-card">
+            <div class="help-title">ศูนย์ช่วยเหลือ</div>
+            <div class="help-subtitle">หากพบปัญหาเกี่ยวกับแอปพลิเคชัน</div>
+
+            <div class="contact-row">
+                <i class="fas fa-envelope"></i>
+                <span>Gmail : pindapwina@gmail.com</span>
+            </div>
+
+            <div class="divider-group">
+                <div class="divider"></div>
+                <div class="divider"></div>
+            </div>
+
+            <div class="contact-row">
+                <i class="fas fa-phone-alt"></i>
+                <span>ปรึกษาเภสัชกรใกล้บ้าน 02-5919992</span>
+            </div>
+
+            <div class="contact-row">
+                <i class="fas fa-hospital"></i> <span>สภางานเภสัชกรรม 027135592</span>
+            </div>
+
+            <div class="contact-row">
+                <i class="fas fa-ambulance"></i> <span>โทรแจ้ง 1669</span>
+            </div>
+        </div>
+
+        <div class="back-btn-container">
+            <button class="btn-back" onclick="window.location.href='profile.html'">
+                <i class="fas fa-arrow-left"></i> ย้อนกลับ
+            </button>
+        </div>
+
+    </div>
+
+    <script src="js/pwa.js"></script>
+</body>
+</html>

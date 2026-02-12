@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Live Scan AI (Pro)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+
+    <style>
+        /* CSS เฉพาะหน้าสแกน */
+        body { background-color: #000; overflow: hidden; height: 100vh; width: 100vw; }
+        #camera-feed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+        .scan-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 50%; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 20px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); z-index: 2; pointer-events: none; }
+        .scan-text { position: absolute; top: -40px; width: 100%; text-align: center; color: white; text-shadow: 1px 1px 3px black; font-weight: bold; }
+        .scan-line { width: 100%; height: 2px; background: #209688; position: absolute; top: 0; animation: scanMove 3s infinite linear; box-shadow: 0 0 10px #209688; }
+        @keyframes scanMove { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        
+        .shutter-container { position: absolute; bottom: 80px; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .shutter-btn { width: 70px; height: 70px; background: white; border-radius: 50%; border: 5px solid rgba(255,255,255,0.3); cursor: pointer; position: relative; transition: 0.2s; }
+        .shutter-btn:active { transform: scale(0.9); background: #e0f2f1; }
+        .shutter-inner { width: 50px; height: 50px; background: white; border: 2px solid #209688; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .top-bar { position: absolute; top: 20px; left: 20px; z-index: 10; }
+        
+        /* Overlays */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .loading-overlay.active { visibility: visible; opacity: 1; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #fff; border-top: 5px solid #209688; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; display: flex; justify-content: center; align-items: flex-end; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-card { background: white; width: 100%; max-width: 420px; border-top-left-radius: 25px; border-top-right-radius: 25px; padding: 25px; display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        
+        .raw-text-box { font-size: 10px; color: #999; background: #eee; padding: 10px; border-radius: 5px; margin-top: 10px; width: 100%; min-height: 60px; }
+        canvas { display: none; }
+
+        .start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 300; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
+        .btn-permission { padding: 15px 40px; background: #209688; border: none; border-radius: 30px; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(32, 150, 136, 0.4); transition: 0.2s; }
+        .btn-permission:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+    <video id="camera-feed" autoplay playsinline muted></video>
+    <canvas id="capture-canvas"></canvas>
+
+    <div class="top-bar">
+        <!-- ใช้ CSS class btn-circle จาก style.css -->
+        <button class="btn-circle" onclick="window.location.href='profile.html'"><i class="fas fa-arrow-left"></i></button>
+    </div>
+
+    <div id="startScreen" class="start-overlay">
+        <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+            <i class="fas fa-camera" style="font-size: 40px;"></i>
+        </div>
+        <h2 style="margin-bottom: 10px;">ขออนุญาตใช้กล้อง</h2>
+        <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">โปรดอนุญาตให้แอพเข้าถึงกล้อง<br>เพื่อสแกนและอ่านฉลากยา</p>
+        <button class="btn-permission" onclick="grantPermission()">อนุญาตและเริ่มสแกน</button>
+    </div>
+
+    <div class="scan-overlay">
+        <div class="scan-text">วางฉลากยาให้อยู่ในกรอบ</div>
+        <div class="scan-line"></div>
+    </div>
+
+    <div class="shutter-container">
+        <div class="shutter-btn" onclick="takeSnapshot()">
+            <div class="shutter-inner"></div>
+        </div>
+    </div>
+
+    <div id="loadingScreen" class="loading-overlay">
+        <div class="spinner"></div>
+        <p style="color: white; font-weight: bold;">กำลังวิเคราะห์ข้อมูล...</p>
+    </div>
+
+    <div id="resultModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="color: #209688; text-align: center; margin-bottom: 15px;">ข้อมูลยาที่อ่านได้</h3>
+            
+            <div class="form-group">
+                <label>ชื่อยา</label>
+                <textarea id="editDrugName" class="form-control" rows="2" style="font-weight:bold; color:#209688;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;"><label>ครั้งละ (เม็ด)</label><input type="text" id="editDose" class="form-control"></div>
+            </div>
+
+            <div class="form-group"><label>ช่วงเวลาทาน</label><textarea id="editMeals" class="form-control" rows="2"></textarea></div>
+
+            <details><summary style="font-size:12px; color:#aaa;">ดูข้อความดิบทั้งหมด</summary><textarea id="rawText" class="raw-text-box" readonly></textarea></details>
+
+            <button class="btn btn-save" onclick="saveData()">บันทึก</button>
+            <button class="btn btn-speak" onclick="speakParsedResult()">🔊 ฟังเสียงอ่าน</button>
+            <button class="btn btn-close" onclick="closeModal()">ถ่ายใหม่</button>
+        </div>
+    </div>
+
+<script src="js/scanner.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>

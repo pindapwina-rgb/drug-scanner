@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การแจ้งเตือน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        /* Specific Styles for Notifications */
+        .calendar-container {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-box {
+            aspect-ratio: 1/1.4;
+            border: 1px solid #cfd8dc;
+            border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center;
+            padding-top: 5px;
+            font-size: 14px; font-weight: bold; color: #333;
+            cursor: pointer; transition: 0.2s;
+            position: relative;
+            background: white;
+        }
+
+        .day-box.active {
+            background-color: #80cbc4;
+            border-color: #00695c;
+            color: white;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .day-box.active::after {
+            content: '\f0f3';
+            font-family: "Font Awesome 5 Free"; font-weight: 900;
+            font-size: 10px;
+            margin-top: auto; margin-bottom: 5px;
+        }
+
+        /* --- ปุ่มย้อนกลับ --- */
+        .back-btn-container {
+            margin-top: 20px; display: flex; justify-content: center;
+        }
+        .btn-back {
+            background-color: #26a69a; color: white;
+            padding: 10px 30px; border-radius: 30px; border: none;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            visibility: hidden; opacity: 0; transition: 0.2s;
+        }
+        .modal-overlay.show { visibility: visible; opacity: 1; }
+
+        .modal-card {
+            background: white; width: 85%; max-width: 350px;
+            padding: 25px; border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .modal-title { font-size: 20px; font-weight: bold; color: #00695c; margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; color: #555; font-size: 14px; }
+        .input-field { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-modal { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-delete { background: #ef5350; color: white; }
+        .btn-cancel { background: #cfd8dc; color: #333; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen">
+        <div class="page-header">
+            <h1><i class="fas fa-bell"></i> การแจ้งเตือน</h1>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <div class="back-btn-container">
+            <button class="btn-back" onclick="window.location.href='profile.html'">
+                <i class="fas fa-arrow-left"></i> ย้อนกลับ
+            </button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reminderModal">
+        <div class="modal-card">
+            <div class="modal-title" id="modalDateTitle">วันที่ XX</div>
+            
+            <div class="form-group">
+                <label class="form-label">ข้อความแจ้งเตือน</label>
+                <input type="text" id="reminderText" class="input-field" placeholder="เช่น กินยาก่อนอาหาร">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">เวลาแจ้งเตือน</label>
+                <input type="time" id="reminderTime" class="input-field">
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-modal btn-save" onclick="saveReminder()">บันทึก</button>
+                <button class="btn-modal btn-delete" onclick="deleteReminder()">ลบ</button>
+            </div>
+            <button class="btn-modal btn-cancel" onclick="closeModal()" style="width: 100%; margin-top: 10px;">ปิด</button>
+        </div>
+    </div>
+
+    <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <script src="js/notifications.js"></script>
+    <script src="js/pwa.js"></script>
+</body>
+</html>
