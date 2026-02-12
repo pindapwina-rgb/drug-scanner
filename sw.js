@@ -1,8 +1,9 @@
 // sw.js - Service Worker for PWA (Offline & Cache)
-const CACHE_NAME = 'drug-scan-v12'; // Updated to v12 for Admin Click Fix
+const CACHE_NAME = 'drug-scan-v13'; // Updated to v13 for Logo & Splash Screen
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './icon.png',
   './home.html',
   './profile.html',
   './Notifications.html',
